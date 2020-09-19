@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30509.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexEditor", "HexEditor.csproj", "{13688B95-E58F-4D2E-8902-A299B72BCF37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinStruct", "..\BinStruct\BinStruct.csproj", "{5BD6AD6E-ED56-42D4-9742-51B76E56D950}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinFile", "..\BinFile\BinFile.csproj", "{FDB48B77-B8D6-48E3-A942-66AF5FE8A296}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexEditControls", "..\HexEditControls\HexEditControls.csproj", "{59CE2EA7-A0A9-4413-9BD9-F509E89C9493}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13688B95-E58F-4D2E-8902-A299B72BCF37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13688B95-E58F-4D2E-8902-A299B72BCF37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13688B95-E58F-4D2E-8902-A299B72BCF37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13688B95-E58F-4D2E-8902-A299B72BCF37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BD6AD6E-ED56-42D4-9742-51B76E56D950}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BD6AD6E-ED56-42D4-9742-51B76E56D950}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BD6AD6E-ED56-42D4-9742-51B76E56D950}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BD6AD6E-ED56-42D4-9742-51B76E56D950}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDB48B77-B8D6-48E3-A942-66AF5FE8A296}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDB48B77-B8D6-48E3-A942-66AF5FE8A296}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDB48B77-B8D6-48E3-A942-66AF5FE8A296}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDB48B77-B8D6-48E3-A942-66AF5FE8A296}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59CE2EA7-A0A9-4413-9BD9-F509E89C9493}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59CE2EA7-A0A9-4413-9BD9-F509E89C9493}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59CE2EA7-A0A9-4413-9BD9-F509E89C9493}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59CE2EA7-A0A9-4413-9BD9-F509E89C9493}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2DDDB3D7-5BB1-4D3D-ABCE-6F45B550FE6B}
+	EndGlobalSection
+EndGlobal
