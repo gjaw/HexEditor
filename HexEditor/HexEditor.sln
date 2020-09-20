@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinFile", "..\BinFile\BinFi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexEditControls", "..\HexEditControls\HexEditControls.csproj", "{59CE2EA7-A0A9-4413-9BD9-F509E89C9493}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTests", "..\XUnitTests\XUnitTests.csproj", "{334AA0E8-C0A1-4802-821E-304A4F733D1E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{59CE2EA7-A0A9-4413-9BD9-F509E89C9493}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59CE2EA7-A0A9-4413-9BD9-F509E89C9493}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59CE2EA7-A0A9-4413-9BD9-F509E89C9493}.Release|Any CPU.Build.0 = Release|Any CPU
+		{334AA0E8-C0A1-4802-821E-304A4F733D1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{334AA0E8-C0A1-4802-821E-304A4F733D1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{334AA0E8-C0A1-4802-821E-304A4F733D1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{334AA0E8-C0A1-4802-821E-304A4F733D1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
