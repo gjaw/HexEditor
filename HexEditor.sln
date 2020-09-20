@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30509.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexEditor", "HexEditor.csproj", "{13688B95-E58F-4D2E-8902-A299B72BCF37}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexEditor", "HexEditor\HexEditor.csproj", "{13688B95-E58F-4D2E-8902-A299B72BCF37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinStruct", "..\BinStruct\BinStruct.csproj", "{5BD6AD6E-ED56-42D4-9742-51B76E56D950}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinStruct", "BinStruct\BinStruct.csproj", "{5BD6AD6E-ED56-42D4-9742-51B76E56D950}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinFile", "..\BinFile\BinFile.csproj", "{FDB48B77-B8D6-48E3-A942-66AF5FE8A296}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinFile", "BinFile\BinFile.csproj", "{FDB48B77-B8D6-48E3-A942-66AF5FE8A296}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexEditControls", "..\HexEditControls\HexEditControls.csproj", "{59CE2EA7-A0A9-4413-9BD9-F509E89C9493}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexEditControls", "HexEditControls\HexEditControls.csproj", "{59CE2EA7-A0A9-4413-9BD9-F509E89C9493}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTests", "..\XUnitTests\XUnitTests.csproj", "{334AA0E8-C0A1-4802-821E-304A4F733D1E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTests", "XUnitTests\XUnitTests.csproj", "{334AA0E8-C0A1-4802-821E-304A4F733D1E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
