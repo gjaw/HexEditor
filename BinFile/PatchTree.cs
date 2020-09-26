@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace Gjaw.Bintools.BinFile
 {
     /// <summary>
     /// PatchTree maintains the chain of changes, providing methods for resolving the current or past state.
     /// </summary>
-    public class PatchTree
+    public class PatchTree : INotifyPropertyChanged
     {
         /// <summary>
         /// Get/Set the maximum depth of recorded steps to allow step-by-step undo.
@@ -31,6 +29,7 @@ namespace Gjaw.Bintools.BinFile
                     CombineEarliestPatches(clevel - value);
                 }
                 _patches.Capacity = value;
+                PropertyChangedInvoke(nameof(UndoCapacity));
             }
         }
 
@@ -67,7 +66,16 @@ namespace Gjaw.Bintools.BinFile
         /// Get/Set the flag that controls whether undo steps should be as granular as possible (true)
         /// or if compatible subsequent edits should automatically be consolidated into a single step (false, default).
         /// </summary>
-        public bool GranularUndo { get; set; }
+        public bool GranularUndo
+        {
+            get => _granular_undo;
+            set
+            {
+                _granular_undo = value;
+                PropertyChangedInvoke(nameof(GranularUndo));
+            }
+        }
+        private bool _granular_undo;
 
         /// <summary>
         /// Storage of binary patches/undo steps.
@@ -75,19 +83,62 @@ namespace Gjaw.Bintools.BinFile
         private readonly List<Patch> _patches;
 
         /// <summary>
+        /// Source of original data
+        /// </summary>
+        private readonly IBinarySource _source;
+
+        /// <summary>
+        /// Event for whenever a public propery changes value.
+        /// </summary>
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
         /// Create a new <see cref="PatchTree"/> with default undo capacity of 500 and non-granular undo steps.
         /// </summary>
-        public PatchTree() : this(500, false) { }
+        /// <param name="source">Source of data</param>
+        public PatchTree(IBinarySource source) : this(source, 500, false) { }
 
         /// <summary>
         /// Create a new <see cref="PatchTree"/> with specified capacity and granularity.
         /// </summary>
+        /// <param name="source">Source of data</param>
         /// <param name="capacity">Number of undo steps to allow storing</param>
         /// <param name="granular_steps">Initial value for <see cref="GranularUndo"/></param>
-        public PatchTree(int capacity, bool granular_steps)
+        public PatchTree(IBinarySource source, int capacity, bool granular_steps)
         {
             _patches = new List<Patch>(capacity);
-            GranularUndo = granular_steps;
+            _granular_undo = granular_steps;
+            _source = source;
+        }
+
+        /// <summary>
+        /// Add a new patch.
+        /// </summary>
+        /// <param name="patch">Patch to add</param>
+        public void Add(Patch patch)
+        {
+            int level = UndoLevel;
+            if (level > 0)
+            {
+                // Can we do opportunistic merge?
+                if (!_granular_undo)
+                {
+                    Patch latest = _patches[level - 1];
+                    if (latest.MergeWith(patch))
+                    {
+                        // merged, all good
+                        return;
+                    }
+                }
+                // Is there space, or is combining needed?
+                if (level == UndoCapacity)
+                {
+                    CombineEarliestPatches(1);
+                }
+            }
+            // Add the new patch
+            _patches.Add(patch);
+            PropertyChangedInvoke(nameof(UndoLevel));
         }
 
         /// <summary>
@@ -96,7 +147,18 @@ namespace Gjaw.Bintools.BinFile
         /// <param name="count">Number of patches to combine</param>
         private void CombineEarliestPatches(int count)
         {
-            throw new NotImplementedException();
+            int current_level = UndoLevel;
+
+            PropertyChangedInvoke(nameof(UndoLevel));
+        }
+
+        /// <summary>
+        /// Fire event handlers for <see cref="PropertyChanged"/>.
+        /// </summary>
+        /// <param name="name">Name of the property that changed</param>
+        protected void PropertyChangedInvoke(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }
