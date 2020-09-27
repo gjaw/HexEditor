@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection.Metadata;
 
 namespace Gjaw.Bintools.BinFile
 {
@@ -124,7 +125,7 @@ namespace Gjaw.Bintools.BinFile
                 if (!_granular_undo)
                 {
                     Patch latest = _patches[level - 1];
-                    if (latest.MergeWith(patch))
+                    if (latest.TryMergeWith(patch))
                     {
                         // merged, all good
                         return;
@@ -142,14 +143,127 @@ namespace Gjaw.Bintools.BinFile
         }
 
         /// <summary>
+        /// Remove most recent patches.
+        /// </summary>
+        /// <param name="count">Number of patches to remove (default: 1)</param>
+        public void Undo(int count = 1)
+        {
+            if (count < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), count, "Count must be positive");
+            }
+            if (count > UndoLevel)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), count, "Cannot undo more times than there are steps to undo");
+            }
+            _patches.RemoveRange(_patches.Count - count, count);
+            PropertyChangedInvoke(nameof(UndoLevel));
+        }
+
+        /// <summary>
         /// Combine the requested number of patches at the start of the history.
         /// </summary>
         /// <param name="count">Number of patches to combine</param>
         private void CombineEarliestPatches(int count)
         {
             int current_level = UndoLevel;
-
+            Patch first = _patches[0];
+            int source;
+            for (source = 1; source <= count; source++)
+            {
+                first = CombinePatches(first, _patches[source]);
+            }
+            _patches[0] = first;
+            int target = 1;
+            for (source++; source < current_level; source++)
+            {
+                _patches[target] = _patches[source];
+                target++;
+            }
+            _patches.RemoveRange(target, count);
             PropertyChangedInvoke(nameof(UndoLevel));
+        }
+
+        /// <summary>
+        /// Combine two patches. Will try merge, falling back to creating a new bigger all-compassing patch.
+        /// </summary>
+        /// <param name="p1">First patch</param>
+        /// <param name="p2">Second patch</param>
+        /// <returns>Combined patch</returns>
+        private Patch CombinePatches(Patch p1, Patch p2)
+        {
+            // Try merge
+            if (p1.TryMergeWith(p2))
+            {
+                return p1;
+            }
+            // Find the range needed by the two patches
+            ulong start = p1.StartOffset;
+            ulong end = p1.EndOffset;
+            if (p2.StartOffset > p1.EndOffset)
+            {
+                // p2 is after p1
+                end = (ulong)((long)p2.EndOffset - p1.EndMove);
+            }
+            else if (p2.StartOffset < p1.StartOffset)
+            {
+                // p2 precedes p1
+                start = p2.StartOffset;
+                end = p1.EndOffset;
+            }
+            else
+            {
+                throw new InvalidOperationException($"BUG! Merge ought to have worked. Please include this data in bug report: CombinePatches({p1}, {p2})");
+            }
+            // Create patch
+            ulong count = end - start;
+            int tbuflen = (int)count;
+            long buflen = tbuflen;
+            if (p1.EndMove > 0) buflen += p1.EndMove;
+            if (p2.EndMove > 0) buflen += p2.EndMove;
+            byte[] buffer = new byte[buflen];
+            _source.Read(start, end-start, buffer, 0);
+            tbuflen += ApplyPatch(buffer, p1, start, tbuflen);
+            tbuflen += ApplyPatch(buffer, p2, start, tbuflen);
+            return new Patch(start, end - start, buffer[0..tbuflen]);
+        }
+
+        /// <summary>
+        /// Apply a patch to data buffer.
+        /// </summary>
+        /// <param name="buffer">Buffer to modify</param>
+        /// <param name="patch">Patch to apply to the buffer</param>
+        /// <param name="offset">Start offset of the buffer to logical start</param>
+        /// <param name="buflen">Current buffer active length</param>
+        /// <returns>Buffer active length change</returns>
+        private int ApplyPatch(byte[] buffer, Patch patch, ulong offset, int buflen)
+        {
+            int start = (int)(patch.StartOffset - offset);
+            int endmove = (int)patch.EndMove;
+            int endstart = (int)(patch.EndOffset - offset + 1);
+            // First move existing data to new position, if needed
+            if (endmove != 0)
+            {
+                int count = buflen - endstart;
+                Span<byte> target = new Span<byte>(buffer, endstart + endmove, count);
+                Span<byte> source = new Span<byte>(buffer, endstart, count);
+                if (!source.TryCopyTo(target))
+                {
+                    throw new InvalidOperationException($"BUG! ApplyPatch failed to move original data from 1 span to another. Bug data: ApplyPatch([{buffer.Length}], {patch}, {offset})");
+                }
+            }
+            // Then copy patch data to its slot, if needed
+            Span<byte> dsource = patch.PatchData;
+            if (!dsource.IsEmpty)
+            {
+                Span<byte> dtarget = new Span<byte>(buffer, start, dsource.Length);
+                if (!dsource.TryCopyTo(dtarget))
+                {
+                    throw new InvalidOperationException($"BUG! ApplyPatch failed to copy patch data from 1 span to another. Bug data: ApplyPatch([{buffer.Length}], {patch}, {offset})");
+                }
+            }
+            // Return offset difference
+            return endmove;
         }
 
         /// <summary>

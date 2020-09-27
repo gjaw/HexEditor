@@ -115,7 +115,7 @@ namespace Gjaw.Bintools.Tests
         {
             var patch1 = Patch.NewReplacement(offset1, dellen1, Encoding.ASCII.GetBytes(data1));
             var patch2 = Patch.NewReplacement(offset2, dellen2, Encoding.ASCII.GetBytes(data2));
-            bool merge_result = patch1.MergeWith(patch2);
+            bool merge_result = patch1.TryMergeWith(patch2);
             Assert.Equal(expected, merge_result);
             Assert.Equal(expected_start, patch1.StartOffset);
             Assert.Equal(expected_end, patch1.EndOffset);

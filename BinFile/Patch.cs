@@ -117,12 +117,26 @@ namespace Gjaw.Bintools.BinFile
         }
 
         /// <summary>
+        /// Create a new patch, automatically determining the type based on span and data.
+        /// </summary>
+        /// <param name="offset">Offset at which to apply the patch</param>
+        /// <param name="span">Number of bytes of original to replace</param>
+        /// <param name="data">Data to replace the old data</param>
+        public Patch(ulong offset, ulong span, IEnumerable<byte> data) : this(data)
+        {
+            StartOffset = offset;
+            EndOffset = offset + span;
+            EndMove = _patchdata.Length - (long)span;
+            EvaluateType();
+        }
+
+        /// <summary>
         /// Merge a patch into this patch. It is assumed that the other patch would be applied after this patch.
         /// This method is only able to perform simple merges where the two patches are mutually compatible to be represented as a single patch.
         /// </summary>
         /// <param name="other">Other patch to merge into this patch</param>
         /// <returns>true if the merge is successful, false if a simple merge cannot be performed</returns>
-        public bool MergeWith(Patch other)
+        public bool TryMergeWith(Patch other)
         {
             // First check the possibility of performing a simple merge (= no gaps)
             if (other.EndOffset < StartOffset) return false; // there would be a gap before start of this patch
@@ -187,10 +201,28 @@ namespace Gjaw.Bintools.BinFile
                 EndOffset = StartOffset + span + postspan;
                 EndMove += other.EndMove;
             }
-            if (StartOffset == EndOffset && EndMove == _patchdata.Length) Type = PatchType.Insert;
-            else if (_patchdata.Length == 0 && (long)span == -EndMove) Type = PatchType.Delete;
-            else Type = PatchType.Replace;
+            EvaluateType();
             return true;
+        }
+
+        /// <summary>
+        /// Re-evaluate the type of the patch, sets the Type.
+        /// </summary>
+        private void EvaluateType()
+        {
+            long negspan = (long)(StartOffset - EndOffset);
+            if (StartOffset == EndOffset && EndMove == _patchdata.Length) Type = PatchType.Insert;
+            else if (_patchdata.Length == 0 && negspan == EndMove) Type = PatchType.Delete;
+            else Type = PatchType.Replace;
+        }
+
+        /// <summary>
+        /// Return simplified representation of the patch object as a string.
+        /// </summary>
+        /// <returns>String with information useful for debugging</returns>
+        public override string ToString()
+        {
+            return $"{Type}({StartOffset}, {EndOffset}, [{_patchdata.Length}] -> {EndMove})";
         }
     }
 }
